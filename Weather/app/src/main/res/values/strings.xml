@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Weather</string>
+
+    <string name="locations_locations">Lokalizacje</string>
+    <string name="add_location">Dodaj lokalizację</string>
+    <string name="refresh">Odśwież dane</string>
+    <string name="temperature_units">Jednostki temperatury</string>
+    <string name="refresh_time">Częstotliwość odświeżania</string>
+    <string name="location">Lokalizacja</string>
+    <string name="add">Dodaj</string>
+    <string name="remove">Usuń</string>
+    <string name="cancel">Anuluj</string>
+    <string name="remove_button">X</string>
+    <string name="remove_location_message">Czy chcesz usunąć lokalizaję?</string>
+    <string name="city_not_found">Nie odnaleziono miasta</string>
+    <string name="connection_error">Błąd połączenia</string>
+    <string name="coords">Współrzędne</string>
+    <string name="time">Czas</string>
+    <string name="temperature">Temperatura</string>
+    <string name="pressure">Ciśnienie</string>
+    <string name="description">Opis</string>
+    <string name="additional_info">Dodatkowe informacje</string>
+    <string name="wind_strength">Siła wiatru</string>
+    <string name="wind_direction">Kierunek wiatru</string>
+    <string name="humidity">Wilgotność</string>
+    <string name="visibility">Widoczność</string>
+    <string name="forecast">Prognoza pogody</string>
+</resources>

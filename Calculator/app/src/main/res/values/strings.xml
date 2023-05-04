@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="app_author">Adrian Ciesielski</string>
+    <string name="app_description">Calculator Application</string>
+
+    <!-- main screen -->
+    <string name="basic_calculator">Basic Calculator</string>
+    <string name="advanced_calculator">Advanced Calculator</string>
+    <string name="about">About</string>
+    <string name="close">Close</string>
+
+    <!-- basic calculator buttons -->
+    <string name="clear">C/CE</string>
+    <string name="allClear">AC</string>
+    <string name="plusMinus">+/-</string>
+    <string name="equals">=</string>
+    <string name="num0">0</string>
+    <string name="num1">1</string>
+    <string name="num2">2</string>
+    <string name="num3">3</string>
+    <string name="num4">4</string>
+    <string name="num5">5</string>
+    <string name="num6">6</string>
+    <string name="num7">7</string>
+    <string name="num8">8</string>
+    <string name="num9">9</string>
+    <string name="divide">/</string>
+    <string name="multiply">*</string>
+    <string name="add">+</string>
+    <string name="subtract">-</string>
+    <string name="point">.</string>
+
+    <!-- advanced calculator buttons -->
+    <string name="sin">sin</string>
+    <string name="cos">cos</string>
+    <string name="tg">tg</string>
+    <string name="ln">ln</string>
+    <string name="log">log</string>
+    <string name="percent">%</string>
+    <string name="sqrt">sqrt</string>
+    <string name="pow_2">x^2</string>
+    <string name="pow_y">x^y</string>
+
+    <!-- messages -->
+    <string name="error_operation">couldn\'t perform this operation</string>
+</resources>

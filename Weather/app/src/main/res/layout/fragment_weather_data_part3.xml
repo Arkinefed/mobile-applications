@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/weather"
+    android:orientation="vertical"
+    android:padding="7dp"
+    android:weightSum="12"
+    tools:context=".WeatherDataPart3Fragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="2"
+        android:autoSizeTextType="uniform"
+        android:text="@string/forecast"
+        android:textAlignment="center"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast0"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast0desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast1desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast2desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast3desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/forecast4desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:textColor="@color/black" />
+</androidx.appcompat.widget.LinearLayoutCompat>
