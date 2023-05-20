@@ -1,7 +1,6 @@
 package com.x.todo;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +40,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         holder.deadline.setText(tasks.get(position).getDeadline().toString());
 
         holder.remove.setOnClickListener(view -> {
-
+            RemoveTaskDialogFragment dialogFragment = new RemoveTaskDialogFragment(tasks, position, this);
+            dialogFragment.show(fragmentManager, "remove_device_dialog");
         });
 
         if (tasks.get(position).getAttachments().size() > 0) {
             holder.attachment.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.baseline_attach_file_24));
         }
 
-        holder.position = position;
+        holder.position = holder.getAbsoluteAdapterPosition();
     }
 
     @Override
@@ -56,11 +56,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         return tasks.size();
     }
 
-    public static class TasksViewHolder extends RecyclerView.ViewHolder {
-        private TextView title;
-        private Button remove;
-        private ImageView attachment;
-        private TextView deadline;
+    public class TasksViewHolder extends RecyclerView.ViewHolder {
+        private final TextView title;
+        private final Button remove;
+        private final ImageView attachment;
+        private final TextView deadline;
 
         private int position;
 

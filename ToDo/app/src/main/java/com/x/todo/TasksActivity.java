@@ -22,8 +22,13 @@ public class TasksActivity extends AppCompatActivity {
 
         ArrayList<Task> tasks = new ArrayList<>();
 
-        tasks.add(new Task("PAM", "zrobić tę aplikację", LocalDateTime.now(), LocalDateTime.now().plusDays(7), true, "studia"));
-        tasks.add(new Task("Major w CS", "odebrać żetony", LocalDateTime.now(), LocalDateTime.now().plusDays(2), true, "gry"));
+        Task task1 = new Task("PAM", "zrobić tę aplikację", LocalDateTime.now(), LocalDateTime.now().plusDays(7), true, "studia");
+        Task task2 = new Task("Major w CS", "odebrać żetony", LocalDateTime.now(), LocalDateTime.now().plusDays(2), true, "gry");
+
+        task2.addAttachment("zdj");
+
+        tasks.add(task1);
+        tasks.add(task2);
 
         TasksAdapter locationsAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
 

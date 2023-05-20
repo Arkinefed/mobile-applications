@@ -4,4 +4,8 @@
     <string name="tasks">ZADANIA</string>
     <string name="add_task">dodaj zadanie</string>
     <string name="remove_button">X</string>
+    <string name="attachment_info">ikona załącznika</string>
+    <string name="remove_task_message">Czy chcesz usunąć zadanie?</string>
+    <string name="remove">usuń</string>
+    <string name="cancel">anuluj</string>
 </resources>
