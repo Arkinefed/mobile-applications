@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="list_item_background_todo">#FFF176</color>
+    <color name="list_item_background_completed">#81C784</color>
 </resources>

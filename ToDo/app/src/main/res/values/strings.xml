@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">To Do</string>
+
+    <string name="tasks">ZADANIA</string>
+    <string name="add_task">dodaj zadanie</string>
+    <string name="remove_button">X</string>
 </resources>
