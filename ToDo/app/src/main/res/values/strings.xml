@@ -7,5 +7,29 @@
     <string name="attachment_info">ikona załącznika</string>
     <string name="remove_task_message">Czy chcesz usunąć zadanie?</string>
     <string name="remove">usuń</string>
+    <string name="add">dodaj</string>
     <string name="cancel">anuluj</string>
+    <string name="title">tytuł</string>
+    <string name="description">opis</string>
+    <string name="notification">powiadomienie</string>
+    <string name="choose_date">wybierz datę</string>
+    <string name="choose_time">wybierz godzinę</string>
+    <string name="date">data</string>
+    <string name="time">godzina</string>
+    <string name="category">kategoria</string>
+    <string name="attachments_chosen">wybrane załączniki</string>
+    <string name="choose_attachments">wybierz załączniki</string>
+    <string name="not_valid_date">wybierz datę w przyszłości</string>
+    <string name="not_valid_time">wybierz czas w przyszłości</string>
+    <string name="cannot_copy_file">nie można skopiować pliku</string>
+
+    <string name="work">praca</string>
+    <string name="hobby">hobby</string>
+    <string name="family">rodzina</string>
+
+    <string-array name="categories">
+        <item>@string/work</item>
+        <item>@string/hobby</item>
+        <item>@string/family</item>
+    </string-array>
 </resources>

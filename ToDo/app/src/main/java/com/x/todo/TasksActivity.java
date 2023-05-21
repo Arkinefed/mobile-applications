@@ -22,10 +22,13 @@ public class TasksActivity extends AppCompatActivity {
 
         ArrayList<Task> tasks = new ArrayList<>();
 
-        Task task1 = new Task("PAM", "zrobić tę aplikację", LocalDateTime.now(), LocalDateTime.now().plusDays(7), true, "studia");
-        Task task2 = new Task("Major w CS", "odebrać żetony", LocalDateTime.now(), LocalDateTime.now().plusDays(2), true, "gry");
+        LocalDateTime dateNow = LocalDateTime.now();
+
+        Task task1 = new Task("PAM", "zrobić tę aplikację", dateNow, LocalDateTime.now().plusDays(7), true, "studia", dateNow.toString());
+        Task task2 = new Task("Major w CS", "odebrać żetony", dateNow, LocalDateTime.now().plusDays(2), true, "gry", dateNow.toString());
 
         task2.addAttachment("zdj");
+        task2.setFinished(true);
 
         tasks.add(task1);
         tasks.add(task2);
@@ -41,7 +44,8 @@ public class TasksActivity extends AppCompatActivity {
         FloatingActionButton addTask = findViewById(R.id.add_task);
 
         addTask.setOnClickListener(view -> {
-
+            AddTaskDialogFragment addTaskDialogFragment = new AddTaskDialogFragment(tasks, locationsAdapter, this);
+            addTaskDialogFragment.show(getSupportFragmentManager(), "add_task_dialog");
         });
     }
 }

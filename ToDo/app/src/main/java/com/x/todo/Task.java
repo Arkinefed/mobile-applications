@@ -14,13 +14,20 @@ public class Task {
     private String category;
     private List<String> attachments;
 
-    public Task(String title, String description, LocalDateTime whenCreated, LocalDateTime deadline, boolean notification, String category) {
+    private String folderName;
+
+    public Task() {
+    }
+
+    public Task(String title, String description, LocalDateTime whenCreated, LocalDateTime deadline, boolean notification, String category, String folderName) {
         this.title = title;
         this.description = description;
         this.whenCreated = whenCreated;
         this.deadline = deadline;
         this.notification = notification;
         this.category = category;
+
+        this.folderName = folderName;
 
         this.finished = false;
         this.attachments = new ArrayList<>();
@@ -92,5 +99,13 @@ public class Task {
 
     public void addAttachment(String attachment) {
         attachments.add(attachment);
+    }
+
+    public String getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
 }

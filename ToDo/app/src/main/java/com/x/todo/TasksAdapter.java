@@ -10,15 +10,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
-    private ArrayList<Task> tasks;
-    private FragmentManager fragmentManager;
-    private Context context;
+    private final ArrayList<Task> tasks;
+    private final FragmentManager fragmentManager;
+    private final Context context;
 
     public TasksAdapter(ArrayList<Task> tasks, FragmentManager fragmentManager, Context context) {
         this.tasks = tasks;
@@ -46,6 +48,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
         if (tasks.get(position).getAttachments().size() > 0) {
             holder.attachment.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.baseline_attach_file_24));
+        } else {
+            holder.attachment.setImageDrawable(null);
+        }
+
+        if (tasks.get(position).isFinished()) {
+            holder.listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.list_item_background_completed));
+        } else {
+            holder.listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.list_item_background_todo));
         }
 
         holder.position = holder.getAbsoluteAdapterPosition();
@@ -63,6 +73,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         private final TextView deadline;
 
         private int position;
+        private final ConstraintLayout listItem;
 
         public TasksViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +86,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             remove = itemView.findViewById(R.id.task_remove);
             attachment = itemView.findViewById(R.id.attachment_image);
             deadline = itemView.findViewById(R.id.deadline);
+
+            listItem = itemView.findViewById(R.id.task_list_item);
         }
     }
 }
