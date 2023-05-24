@@ -1,10 +1,16 @@
 package com.x.todo;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Task {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String title;
     private String description;
     private LocalDateTime whenCreated;
@@ -31,6 +37,14 @@ public class Task {
 
         this.finished = false;
         this.attachments = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {

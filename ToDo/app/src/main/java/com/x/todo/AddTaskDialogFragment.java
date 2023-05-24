@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class AddTaskDialogFragment extends DialogFragment {
-    private final ArrayList<Task> tasks;
+    private final List<Task> tasks;
     private final TasksAdapter tasksAdapter;
     private final TasksActivity tasksActivity;
 
@@ -53,7 +53,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
     private List<Uri> attachments = new ArrayList<>();
 
-    public AddTaskDialogFragment(ArrayList<Task> tasks, TasksAdapter tasksAdapter, TasksActivity tasksActivity) {
+    public AddTaskDialogFragment(List<Task> tasks, TasksAdapter tasksAdapter, TasksActivity tasksActivity) {
         this.tasks = tasks;
         this.tasksAdapter = tasksAdapter;
         this.tasksActivity = tasksActivity;
@@ -198,6 +198,18 @@ public class AddTaskDialogFragment extends DialogFragment {
                     }
 
                     tasks.add(task);
+
+                    Thread dbThread = new Thread(() -> {
+                        TaskDatabase.getInstance(tasksActivity).taskDao().insert(task);
+                    });
+
+                    dbThread.start();
+
+                    try {
+                        dbThread.join();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     tasksAdapter.notifyDataSetChanged();
                 })

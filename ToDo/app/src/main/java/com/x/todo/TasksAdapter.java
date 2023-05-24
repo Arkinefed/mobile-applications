@@ -17,13 +17,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
-    private final ArrayList<Task> tasks;
+    private final List<Task> tasks;
     private final FragmentManager fragmentManager;
     private final Context context;
 
-    public TasksAdapter(ArrayList<Task> tasks, FragmentManager fragmentManager, Context context) {
+    public TasksAdapter(List<Task> tasks, FragmentManager fragmentManager, Context context) {
         this.tasks = tasks;
         this.fragmentManager = fragmentManager;
         this.context = context;

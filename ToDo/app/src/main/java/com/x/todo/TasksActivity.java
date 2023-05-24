@@ -9,10 +9,12 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TasksActivity extends AppCompatActivity {
+    private List<Task> tasks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +22,17 @@ public class TasksActivity extends AppCompatActivity {
 
         RecyclerView taskList = findViewById(R.id.tasks_list);
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        Thread dbThread = new Thread(() -> {
+            tasks = TaskDatabase.getInstance(this).taskDao().getAll();
+        });
+
+        dbThread.start();
+
+        try {
+            dbThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         TasksAdapter locationsAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
 
