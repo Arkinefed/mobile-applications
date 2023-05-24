@@ -22,17 +22,6 @@ public class TasksActivity extends AppCompatActivity {
 
         ArrayList<Task> tasks = new ArrayList<>();
 
-        LocalDateTime dateNow = LocalDateTime.now();
-
-        Task task1 = new Task("PAM", "zrobić tę aplikację", dateNow, LocalDateTime.now().plusDays(7), true, "studia", dateNow.toString());
-        Task task2 = new Task("Major w CS", "odebrać żetony", dateNow, LocalDateTime.now().plusDays(2), true, "gry", dateNow.toString());
-
-        task2.addAttachment("zdj");
-        task2.setFinished(true);
-
-        tasks.add(task1);
-        tasks.add(task2);
-
         TasksAdapter locationsAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());

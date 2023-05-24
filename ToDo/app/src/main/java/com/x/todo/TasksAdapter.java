@@ -1,6 +1,7 @@
 package com.x.todo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             super(itemView);
 
             itemView.setOnClickListener(view -> {
-
+                Intent intent = new Intent(view.getContext(), TaskActivity.class);
+                intent.putExtra("position", position);
+                view.getContext().startActivity(intent);
             });
 
             title = itemView.findViewById(R.id.task_title);

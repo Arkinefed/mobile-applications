@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TaskActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textAlignment="center"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/description"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/when_created"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/when_created"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/deadline"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/deadline"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/status"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/notification"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/notification"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/category"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/category"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="7dp"
+            android:autoSizeTextType="uniform"
+            android:padding="7dp"
+            android:text="@string/attachments"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:id="@+id/attachments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:orientation="vertical"
+            android:padding="7dp" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

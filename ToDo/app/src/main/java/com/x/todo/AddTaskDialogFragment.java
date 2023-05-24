@@ -63,7 +63,7 @@ public class AddTaskDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(5), uris -> {
+        pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(), uris -> {
             attachments = uris;
 
             chosenAttachmentsCount.setText(String.valueOf(uris.size()));
@@ -164,7 +164,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         chooseAttachments.setOnClickListener(view -> {
             pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
-                    .setMediaType((VisualMediaType) ImageAndVideo.INSTANCE)
+                    .setMediaType((VisualMediaType) ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                     .build());
         });
 

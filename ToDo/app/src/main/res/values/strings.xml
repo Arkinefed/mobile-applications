@@ -11,7 +11,11 @@
     <string name="cancel">anuluj</string>
     <string name="title">tytuł</string>
     <string name="description">opis</string>
+    <string name="when_created">data utworzenia</string>
+    <string name="deadline">termin wykonania</string>
     <string name="notification">powiadomienie</string>
+    <string name="status">status</string>
+    <string name="attachments">załączniki</string>
     <string name="choose_date">wybierz datę</string>
     <string name="choose_time">wybierz godzinę</string>
     <string name="date">data</string>
