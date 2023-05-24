@@ -30,6 +30,8 @@
     <string name="unfinished">nieukończone</string>
     <string name="on">włączone</string>
     <string name="off">wyłączone</string>
+    <string name="search">wyszukaj</string>
+    <string name="options">opcje</string>
 
     <string name="work">praca</string>
     <string name="hobby">hobby</string>

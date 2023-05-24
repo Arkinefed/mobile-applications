@@ -21,7 +21,7 @@
             android:name=".TaskActivity"
             android:exported="false" />
         <activity
-            android:name=".TasksActivity"
+            android:name=".TaskListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

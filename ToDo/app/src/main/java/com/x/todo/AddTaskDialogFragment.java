@@ -19,7 +19,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageAndVideo;
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +38,7 @@ import java.util.Locale;
 public class AddTaskDialogFragment extends DialogFragment {
     private final List<Task> tasks;
     private final TasksAdapter tasksAdapter;
-    private final TasksActivity tasksActivity;
+    private final TaskListActivity taskListActivity;
 
     private EditText title;
     private EditText description;
@@ -53,10 +52,10 @@ public class AddTaskDialogFragment extends DialogFragment {
 
     private List<Uri> attachments = new ArrayList<>();
 
-    public AddTaskDialogFragment(List<Task> tasks, TasksAdapter tasksAdapter, TasksActivity tasksActivity) {
+    public AddTaskDialogFragment(List<Task> tasks, TasksAdapter tasksAdapter, TaskListActivity taskListActivity) {
         this.tasks = tasks;
         this.tasksAdapter = tasksAdapter;
-        this.tasksActivity = tasksActivity;
+        this.taskListActivity = taskListActivity;
     }
 
     @Override
@@ -107,7 +106,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         chooseDate.setOnClickListener(view -> {
             new DatePickerDialog(
-                    tasksActivity,
+                    taskListActivity,
                     (v, selectedYear, selectedMonth, selectedDay) -> {
                         Calendar selectedCalendar = Calendar.getInstance();
                         selectedCalendar.set(selectedYear, selectedMonth, selectedDay, selHour[0], selMinute[0]);
@@ -120,7 +119,7 @@ public class AddTaskDialogFragment extends DialogFragment {
                             String formattedDate = String.format(Locale.getDefault(), "%d-%02d-%02d", selectedYear, (selectedMonth + 1), selectedDay);
                             date.setText(formattedDate);
                         } else {
-                            Toast.makeText(tasksActivity, R.string.not_valid_date, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(taskListActivity, R.string.not_valid_date, Toast.LENGTH_SHORT).show();
                         }
                     },
                     year,
@@ -135,7 +134,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         chooseTime.setOnClickListener(view -> {
             new TimePickerDialog(
-                    tasksActivity,
+                    taskListActivity,
                     (v, hourOfDay, m) -> {
                         Calendar selectedCalendar = Calendar.getInstance();
                         selectedCalendar.set(selYear[0], selMonth[0], selDay[0], hourOfDay, m);
@@ -148,7 +147,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
                             time.setText(selectedTime);
                         } else {
-                            Toast.makeText(tasksActivity, R.string.not_valid_time, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(taskListActivity, R.string.not_valid_time, Toast.LENGTH_SHORT).show();
                         }
                     },
                     hour,
@@ -157,7 +156,7 @@ public class AddTaskDialogFragment extends DialogFragment {
             ).show();
         });
 
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(tasksActivity, R.array.categories, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(taskListActivity, R.array.categories, android.R.layout.simple_spinner_item);
 
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(spinnerAdapter);
@@ -182,23 +181,23 @@ public class AddTaskDialogFragment extends DialogFragment {
                             dateNow.toString());
 
                     for (Uri u : attachments) {
-                        DocumentFile df = DocumentFile.fromSingleUri(tasksActivity, u);
+                        DocumentFile df = DocumentFile.fromSingleUri(taskListActivity, u);
 
-                        String outputFolder = tasksActivity.getFilesDir() + "/" + task.getFolderName() + "/";
+                        String outputFolder = taskListActivity.getFilesDir() + "/" + task.getFolderName() + "/";
                         String output = outputFolder + df.getName();
 
                         try {
                             Files.createDirectories(Paths.get(outputFolder));
-                            Files.copy(tasksActivity.getContentResolver().openInputStream(u), Paths.get(output));
+                            Files.copy(taskListActivity.getContentResolver().openInputStream(u), Paths.get(output));
 
                             task.addAttachment(output);
                         } catch (IOException e) {
-                            Toast.makeText(tasksActivity, R.string.cannot_copy_file, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(taskListActivity, R.string.cannot_copy_file, Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     Thread dbThread = new Thread(() -> {
-                        TaskDatabase.getInstance(tasksActivity).taskDao().insert(task);
+                        TaskDatabase.getInstance(taskListActivity).taskDao().insert(task);
 
                         tasks.clear();
                         tasks.addAll(TaskDatabase.getInstance(getContext()).taskDao().getAll());

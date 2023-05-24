@@ -9,16 +9,15 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class TasksActivity extends AppCompatActivity {
+public class TaskListActivity extends AppCompatActivity {
     private List<Task> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tasks);
+        setContentView(R.layout.activity_task_list);
 
         RecyclerView taskList = findViewById(R.id.tasks_list);
 
