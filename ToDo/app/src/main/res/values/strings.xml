@@ -26,6 +26,10 @@
     <string name="not_valid_date">wybierz datę w przyszłości</string>
     <string name="not_valid_time">wybierz czas w przyszłości</string>
     <string name="cannot_copy_file">nie można skopiować pliku</string>
+    <string name="finished">ukończone</string>
+    <string name="unfinished">nieukończone</string>
+    <string name="on">włączone</string>
+    <string name="off">wyłączone</string>
 
     <string name="work">praca</string>
     <string name="hobby">hobby</string>

@@ -13,8 +13,11 @@ public interface TaskDao {
     @Query("select * from task")
     List<Task> getAll();
 
-    @Query("select * from task where title like :input")
-    List<Task> findByTitle(String input);
+    @Query("select * from task where title like :title")
+    List<Task> findByTitle(String title);
+
+    @Query("select * from task where id = :id limit 1")
+    Task findTaskById(int id);
 
     @Insert
     void insert(Task task);
