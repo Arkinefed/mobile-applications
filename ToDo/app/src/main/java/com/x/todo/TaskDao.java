@@ -22,6 +22,9 @@ public interface TaskDao {
     @Delete
     void delete(Task task);
 
+    @Query("delete from task where id = :id")
+    void deleteTaskById(int id);
+
     @Update
     void update(Task task);
 }

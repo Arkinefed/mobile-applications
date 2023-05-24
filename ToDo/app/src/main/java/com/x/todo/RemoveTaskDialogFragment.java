@@ -3,6 +3,7 @@ package com.x.todo;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +31,10 @@ public class RemoveTaskDialogFragment extends DialogFragment {
         builder.setMessage(R.string.remove_task_message).
                 setPositiveButton(R.string.remove, (dialogInterface, i) -> {
                     Thread dbThread = new Thread(() -> {
-                        TaskDatabase.getInstance(getContext()).taskDao().delete(tasks.get(position));
+                        TaskDatabase.getInstance(getContext()).taskDao().deleteTaskById(tasks.get(position).getId());
+
+                        tasks.clear();
+                        tasks.addAll(TaskDatabase.getInstance(getContext()).taskDao().getAll());
                     });
 
                     dbThread.start();
@@ -40,8 +44,6 @@ public class RemoveTaskDialogFragment extends DialogFragment {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-
-                    tasks.remove(position);
 
                     tasksAdapter.notifyDataSetChanged();
                 }).

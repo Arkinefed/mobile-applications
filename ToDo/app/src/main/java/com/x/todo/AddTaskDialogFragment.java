@@ -197,10 +197,11 @@ public class AddTaskDialogFragment extends DialogFragment {
                         }
                     }
 
-                    tasks.add(task);
-
                     Thread dbThread = new Thread(() -> {
                         TaskDatabase.getInstance(tasksActivity).taskDao().insert(task);
+
+                        tasks.clear();
+                        tasks.addAll(TaskDatabase.getInstance(getContext()).taskDao().getAll());
                     });
 
                     dbThread.start();
