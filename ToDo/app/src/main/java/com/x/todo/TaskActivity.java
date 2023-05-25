@@ -56,7 +56,7 @@ public class TaskActivity extends AppCompatActivity {
         whenCreated.setText(task.getWhenCreated().toString());
         deadline.setText(task.getDeadline().toString());
         status.setText(task.isFinished() ? R.string.finished : R.string.unfinished);
-        notification.setText(task.isFinished() ? R.string.on : R.string.off);
+        notification.setText(task.isNotification() ? R.string.on : R.string.off);
         category.setText(task.getCategory());
         attachmentCount.setText(String.valueOf(task.getAttachments().size()));
 
