@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -18,6 +20,10 @@ import java.util.List;
 
 public class TaskListActivity extends AppCompatActivity {
     private List<Task> tasks;
+
+    private TasksAdapter tasksAdapter;
+
+    private EditText search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,19 +49,30 @@ public class TaskListActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
-        TasksAdapter locationsAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
+        tasksAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 
-        taskList.setAdapter(locationsAdapter);
+        taskList.setAdapter(tasksAdapter);
         taskList.setLayoutManager(layoutManager);
         taskList.setItemAnimator(new DefaultItemAnimator());
 
         FloatingActionButton addTask = findViewById(R.id.add_task);
 
         addTask.setOnClickListener(view -> {
-            AddTaskDialogFragment addTaskDialogFragment = new AddTaskDialogFragment(tasks, locationsAdapter, this);
+            AddTaskDialogFragment addTaskDialogFragment = new AddTaskDialogFragment(tasks, tasksAdapter, this);
             addTaskDialogFragment.show(getSupportFragmentManager(), "add_task_dialog");
+        });
+
+        search = findViewById(R.id.search);
+
+        search.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
+                search("%" + textView.getText().toString() + "%");
+
+                return true;
+            }
+            return false;
         });
     }
 
@@ -63,16 +80,40 @@ public class TaskListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
 
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+
+        if (id == R.id.search) {
+            search("%" + search.getText().toString() + "%");
+        } else if (id == R.id.menu) {
+
+        } else {
+            return super.onOptionsItemSelected(item);
         }
+
+        return true;
+    }
+
+    private void search(String query) {
+        Thread dbThread2 = new Thread(() -> {
+            tasks.clear();
+            tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitle(query));
+        });
+
+        dbThread2.start();
+
+        try {
+            dbThread2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        tasksAdapter.notifyDataSetChanged();
     }
 }

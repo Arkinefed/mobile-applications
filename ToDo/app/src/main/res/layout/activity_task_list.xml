@@ -34,6 +34,20 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:orientation="vertical">
 
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:autoSizeTextType="uniform"
+            android:autofillHints="name"
+            android:hint="@string/search"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:padding="7dp" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tasks_list"
             android:layout_width="match_parent"
@@ -49,10 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="17dp"
-        android:layout_marginBottom="17dp"
+        android:layout_margin="17dp"
         android:backgroundTint="@color/black"
         android:contentDescription="@string/add_task"
         android:scaleType="center"
