@@ -16,6 +16,12 @@ public interface TaskDao {
     @Query("select * from task where title like :title")
     List<Task> findByTitle(String title);
 
+    @Query("select * from task where title like :title and finished = 0")
+    List<Task> findByTitleUnfinished(String title);
+
+    @Query("select * from task where finished = 0")
+    List<Task> findUnfinished();
+
     @Query("select * from task where id = :id limit 1")
     Task findTaskById(int id);
 
