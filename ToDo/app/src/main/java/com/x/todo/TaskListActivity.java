@@ -99,10 +99,10 @@ public class TaskListActivity extends AppCompatActivity {
             editor.putBoolean("hideFinished", hideFinished);
             item.setChecked(hideFinished);
         } else if (id == R.id.sort_most_urgent) {
-            boolean hideFinished = !sharedPref.getBoolean("sortMostUrgent", false);
+            boolean sortMostUrgent = !sharedPref.getBoolean("sortMostUrgent", false);
 
-            editor.putBoolean("sortMostUrgent", hideFinished);
-            item.setChecked(hideFinished);
+            editor.putBoolean("sortMostUrgent", sortMostUrgent);
+            item.setChecked(sortMostUrgent);
         } else {
             return super.onOptionsItemSelected(item);
         }
