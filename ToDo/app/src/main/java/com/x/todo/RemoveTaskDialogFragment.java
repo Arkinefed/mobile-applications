@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class RemoveTaskDialogFragment extends DialogFragment {
         builder.setMessage(R.string.remove_task_message).
                 setPositiveButton(R.string.remove, (dialogInterface, i) -> {
                     Thread dbThread = new Thread(() -> {
+                        deleteFolder(new File(getContext().getFilesDir() + "/" + tasks.get(position).getFolderName()));
+
                         TaskDatabase.getInstance(getContext()).taskDao().deleteTaskById(tasks.get(position).getId());
 
                         tasks.clear();
@@ -51,5 +55,15 @@ public class RemoveTaskDialogFragment extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    private void deleteFolder(File folder) {
+        if (folder.isDirectory()) {
+            for (File child : folder.listFiles()) {
+                deleteFolder(child);
+            }
+        }
+
+        folder.delete();
     }
 }
