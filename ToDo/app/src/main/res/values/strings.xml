@@ -31,7 +31,7 @@
     <string name="on">włączone</string>
     <string name="off">wyłączone</string>
     <string name="search">wyszukaj</string>
-    <string name="options">opcje</string>
+    <string name="sort_most_urgent">od najpilniejszych</string>
     <string name="more">więcej</string>
     <string name="hide_finished">ukryj zakończone</string>
 

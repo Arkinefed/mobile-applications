@@ -198,9 +198,6 @@ public class AddTaskDialogFragment extends DialogFragment {
 
                     Thread dbThread = new Thread(() -> {
                         TaskDatabase.getInstance(taskListActivity).taskDao().insert(task);
-
-                        tasks.clear();
-                        tasks.addAll(TaskDatabase.getInstance(getContext()).taskDao().getAll());
                     });
 
                     dbThread.start();
@@ -210,6 +207,8 @@ public class AddTaskDialogFragment extends DialogFragment {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+
+                    taskListActivity.updateTaskList();
 
                     tasksAdapter.notifyDataSetChanged();
                 })

@@ -18,10 +18,11 @@ import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskListActivity extends AppCompatActivity {
-    private List<Task> tasks;
+    private final List<Task> tasks = new ArrayList<>();
 
     private TasksAdapter tasksAdapter;
 
@@ -38,30 +39,9 @@ public class TaskListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.tasks);
 
         RecyclerView taskList = findViewById(R.id.tasks_list);
-
-        Thread dbThread = new Thread(() -> {
-            SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
-
-            boolean hideFinished = sharedPref.getBoolean("hideFinished", false);
-
-            if (hideFinished) {
-                tasks = TaskDatabase.getInstance(this).taskDao().findUnfinished();
-            } else {
-                tasks = TaskDatabase.getInstance(this).taskDao().getAll();
-            }
-        });
-
-        dbThread.start();
-
-        try {
-            dbThread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 
         tasksAdapter = new TasksAdapter(tasks, getSupportFragmentManager(), this);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 
         taskList.setAdapter(tasksAdapter);
         taskList.setLayoutManager(layoutManager);
@@ -75,28 +55,29 @@ public class TaskListActivity extends AppCompatActivity {
         });
 
         search = findViewById(R.id.search);
-
         search.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == EditorInfo.IME_ACTION_SEARCH) {
-                search("%" + textView.getText().toString() + "%");
+                updateTaskList();
 
                 return true;
             }
             return false;
         });
+
+        updateTaskList();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-
-        inflater.inflate(R.menu.main_menu, menu);
-
         SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
 
         boolean hideFinished = sharedPref.getBoolean("hideFinished", false);
+        boolean sortMostUrgent = sharedPref.getBoolean("sortMostUrgent", false);
 
+        inflater.inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.hide_finished).setChecked(hideFinished);
+        menu.findItem(R.id.sort_most_urgent).setChecked(sortMostUrgent);
 
         return true;
     }
@@ -105,43 +86,55 @@ public class TaskListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
+        SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
         if (id == R.id.search) {
-            search("%" + search.getText().toString() + "%");
+
         } else if (id == R.id.more) {
 
         } else if (id == R.id.hide_finished) {
-            SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-
             boolean hideFinished = !sharedPref.getBoolean("hideFinished", false);
 
-            item.setChecked(hideFinished);
-
             editor.putBoolean("hideFinished", hideFinished);
-            editor.apply();
+            item.setChecked(hideFinished);
+        } else if (id == R.id.sort_most_urgent) {
+            boolean hideFinished = !sharedPref.getBoolean("sortMostUrgent", false);
 
-            search("%" + search.getText().toString() + "%");
+            editor.putBoolean("sortMostUrgent", hideFinished);
+            item.setChecked(hideFinished);
         } else {
             return super.onOptionsItemSelected(item);
         }
 
-        tasksAdapter.notifyDataSetChanged();
+        editor.apply();
+        updateTaskList();
 
         return true;
     }
 
-    private void search(String query) {
-        SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+    public void updateTaskList() {
+        String query = "%" + search.getText().toString() + "%";
 
+        SharedPreferences sharedPref = getSharedPreferences("pref", Context.MODE_PRIVATE);
         boolean hideFinished = sharedPref.getBoolean("hideFinished", false);
+        boolean sortMostUrgent = sharedPref.getBoolean("sortMostUrgent", false);
 
         Thread dbThread2 = new Thread(() -> {
             tasks.clear();
 
-            if (hideFinished) {
-                tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinished(query));
+            if (sortMostUrgent) {
+                if (hideFinished) {
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinishedSortMostUrgent(query));
+                } else {
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleSortMostUrgent(query));
+                }
             } else {
-                tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitle(query));
+                if (hideFinished) {
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinished(query));
+                } else {
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitle(query));
+                }
             }
         });
 

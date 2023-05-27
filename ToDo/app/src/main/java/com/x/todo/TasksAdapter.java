@@ -1,6 +1,5 @@
 package com.x.todo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +15,17 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
     private final List<Task> tasks;
     private final FragmentManager fragmentManager;
-    private final Context context;
+    private final TaskListActivity taskListActivity;
 
-    public TasksAdapter(List<Task> tasks, FragmentManager fragmentManager, Context context) {
+    public TasksAdapter(List<Task> tasks, FragmentManager fragmentManager, TaskListActivity taskListActivity) {
         this.tasks = tasks;
         this.fragmentManager = fragmentManager;
-        this.context = context;
+        this.taskListActivity = taskListActivity;
     }
 
     @NonNull
@@ -44,20 +42,20 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         holder.deadline.setText(tasks.get(position).getDeadline().toString());
 
         holder.remove.setOnClickListener(view -> {
-            RemoveTaskDialogFragment dialogFragment = new RemoveTaskDialogFragment(tasks, position, this);
+            RemoveTaskDialogFragment dialogFragment = new RemoveTaskDialogFragment(tasks, position, this, taskListActivity);
             dialogFragment.show(fragmentManager, "remove_device_dialog");
         });
 
         if (tasks.get(position).getAttachments().size() > 0) {
-            holder.attachment.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.baseline_attach_file_24));
+            holder.attachment.setImageDrawable(AppCompatResources.getDrawable(taskListActivity, R.drawable.baseline_attach_file_24));
         } else {
             holder.attachment.setImageDrawable(null);
         }
 
         if (tasks.get(position).isFinished()) {
-            holder.listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.list_item_background_completed));
+            holder.listItem.setBackgroundColor(ContextCompat.getColor(taskListActivity, R.color.list_item_background_completed));
         } else {
-            holder.listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.list_item_background_todo));
+            holder.listItem.setBackgroundColor(ContextCompat.getColor(taskListActivity, R.color.list_item_background_todo));
         }
 
         holder.position = holder.getAbsoluteAdapterPosition();

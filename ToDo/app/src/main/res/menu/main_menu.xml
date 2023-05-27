@@ -18,6 +18,12 @@
                 android:icon="@drawable/baseline_visibility_24"
                 android:title="@string/hide_finished"
                 app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/sort_most_urgent"
+                android:checkable="true"
+                android:icon="@drawable/baseline_sort_24"
+                android:title="@string/sort_most_urgent"
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>

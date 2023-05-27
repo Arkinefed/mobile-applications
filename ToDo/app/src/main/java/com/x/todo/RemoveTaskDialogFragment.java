@@ -3,26 +3,25 @@ package com.x.todo;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RemoveTaskDialogFragment extends DialogFragment {
     private final List<Task> tasks;
     private final int position;
     private final TasksAdapter tasksAdapter;
+    private final TaskListActivity taskListActivity;
 
-    public RemoveTaskDialogFragment(List<Task> tasks, int position, TasksAdapter tasksAdapter) {
+    public RemoveTaskDialogFragment(List<Task> tasks, int position, TasksAdapter tasksAdapter, TaskListActivity taskListActivity) {
         this.tasks = tasks;
         this.position = position;
         this.tasksAdapter = tasksAdapter;
+        this.taskListActivity = taskListActivity;
     }
 
     @NonNull
@@ -36,9 +35,6 @@ public class RemoveTaskDialogFragment extends DialogFragment {
                         deleteFolder(new File(getContext().getFilesDir() + "/" + tasks.get(position).getFolderName()));
 
                         TaskDatabase.getInstance(getContext()).taskDao().deleteTaskById(tasks.get(position).getId());
-
-                        tasks.clear();
-                        tasks.addAll(TaskDatabase.getInstance(getContext()).taskDao().getAll());
                     });
 
                     dbThread.start();
@@ -48,6 +44,8 @@ public class RemoveTaskDialogFragment extends DialogFragment {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+
+                    taskListActivity.updateTaskList();
 
                     tasksAdapter.notifyDataSetChanged();
                 }).
