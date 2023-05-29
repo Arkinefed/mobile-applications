@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,8 @@ public class TaskListActivity extends AppCompatActivity {
     private TasksAdapter tasksAdapter;
 
     private EditText search;
+
+    private static WeakReference<TaskListActivity> weakReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class TaskListActivity extends AppCompatActivity {
             return false;
         });
 
+        weakReference = new WeakReference<>(TaskListActivity.this);
         updateTaskList();
     }
 
@@ -103,6 +108,12 @@ public class TaskListActivity extends AppCompatActivity {
 
             editor.putBoolean("sortMostUrgent", sortMostUrgent);
             item.setChecked(sortMostUrgent);
+        } else if (id == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+
+            startActivity(intent);
+
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -120,20 +131,34 @@ public class TaskListActivity extends AppCompatActivity {
         boolean hideFinished = sharedPref.getBoolean("hideFinished", false);
         boolean sortMostUrgent = sharedPref.getBoolean("sortMostUrgent", false);
 
+        List<String> categories = new ArrayList<>();
+
+        if (sharedPref.getBoolean("cat.work", true)) {
+            categories.add("praca");
+        }
+
+        if (sharedPref.getBoolean("cat.hobby", true)) {
+            categories.add("hobby");
+        }
+
+        if (sharedPref.getBoolean("cat.family", true)) {
+            categories.add("rodzina");
+        }
+
         Thread dbThread2 = new Thread(() -> {
             tasks.clear();
 
             if (sortMostUrgent) {
                 if (hideFinished) {
-                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinishedSortMostUrgent(query));
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinishedSortMostUrgentWithCategories(query, categories));
                 } else {
-                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleSortMostUrgent(query));
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleSortMostUrgentWithCategories(query, categories));
                 }
             } else {
                 if (hideFinished) {
-                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinished(query));
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleUnfinishedWithCategories(query, categories));
                 } else {
-                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitle(query));
+                    tasks.addAll(TaskDatabase.getInstance(this).taskDao().findByTitleWithCategories(query, categories));
                 }
             }
         });
@@ -147,5 +172,9 @@ public class TaskListActivity extends AppCompatActivity {
         }
 
         tasksAdapter.notifyDataSetChanged();
+    }
+
+    public static TaskListActivity getWeakReference() {
+        return weakReference.get();
     }
 }

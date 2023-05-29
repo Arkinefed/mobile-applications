@@ -34,6 +34,9 @@
     <string name="sort_most_urgent">od najpilniejszych</string>
     <string name="more">więcej</string>
     <string name="hide_finished">ukryj zakończone</string>
+    <string name="settings">ustawienia</string>
+    <string name="categories">kategorie</string>
+    <string name="notification_time">czas powiadomień (minuty)</string>
 
     <string name="work">praca</string>
     <string name="hobby">hobby</string>

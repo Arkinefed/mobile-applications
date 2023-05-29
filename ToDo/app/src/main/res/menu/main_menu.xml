@@ -24,6 +24,11 @@
                 android:icon="@drawable/baseline_sort_24"
                 android:title="@string/sort_most_urgent"
                 app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/baseline_settings_24"
+                android:title="@string/settings"
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 </menu>
