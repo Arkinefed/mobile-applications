@@ -38,6 +38,9 @@
     <string name="categories">kategorie</string>
     <string name="notification_time">czas powiadomień (minuty)</string>
 
+    <string name="channel_name">zadania</string>
+    <string name="channel_description">powiadomienia o zadaniach</string>
+
     <string name="work">praca</string>
     <string name="hobby">hobby</string>
     <string name="family">rodzina</string>

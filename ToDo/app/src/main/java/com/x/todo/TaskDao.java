@@ -38,6 +38,9 @@ public interface TaskDao {
     @Query("select * from task where id = :id limit 1")
     Task findTaskById(int id);
 
+    @Query("select * from task order by whenCreated desc limit 1")
+    Task findLastInserted();
+
     @Insert
     void insert(Task task);
 

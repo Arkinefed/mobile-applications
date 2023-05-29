@@ -3,9 +3,15 @@ package com.x.todo;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.Manifest;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,6 +28,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.DialogFragment;
 
@@ -209,6 +218,42 @@ public class AddTaskDialogFragment extends DialogFragment {
                     }
 
                     taskListActivity.updateTaskList();
+
+                    final Task[] lastInserted = {null};
+
+                    Thread dbThread2 = new Thread(() -> {
+                        lastInserted[0] = TaskDatabase.getInstance(taskListActivity).taskDao().findLastInserted();
+                    });
+
+                    dbThread2.start();
+
+                    try {
+                        dbThread2.join();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Intent resultIntent = new Intent(taskListActivity, TaskActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                    resultIntent.putExtra("id", lastInserted[0].getId());
+
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(taskListActivity);
+                    stackBuilder.addNextIntentWithParentStack(resultIntent);
+                    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(taskListActivity, "id")
+                            .setSmallIcon(R.drawable.baseline_notifications_24)
+                            .setContentTitle(lastInserted[0].getTitle())
+                            .setContentText(lastInserted[0].getDescription())
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(resultPendingIntent)
+                            .setAutoCancel(true);
+
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(taskListActivity);
+
+                    if (ActivityCompat.checkSelfPermission(taskListActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                        notificationManager.notify(lastInserted[0].getId(), notificationBuilder.build());
+                    }
 
                     tasksAdapter.notifyDataSetChanged();
                 })
