@@ -1,17 +1,17 @@
 package com.x.todo;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.Manifest;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,9 +28,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.DialogFragment;
 
@@ -38,16 +35,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class AddTaskDialogFragment extends DialogFragment {
-    private final List<Task> tasks;
     private final TasksAdapter tasksAdapter;
-    private final TaskListActivity taskListActivity;
+    private final TaskListActivity activity;
 
     private EditText title;
     private EditText description;
@@ -61,10 +59,9 @@ public class AddTaskDialogFragment extends DialogFragment {
 
     private List<Uri> attachments = new ArrayList<>();
 
-    public AddTaskDialogFragment(List<Task> tasks, TasksAdapter tasksAdapter, TaskListActivity taskListActivity) {
-        this.tasks = tasks;
+    public AddTaskDialogFragment(TasksAdapter tasksAdapter, TaskListActivity activity) {
         this.tasksAdapter = tasksAdapter;
-        this.taskListActivity = taskListActivity;
+        this.activity = activity;
     }
 
     @Override
@@ -115,7 +112,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         chooseDate.setOnClickListener(view -> {
             new DatePickerDialog(
-                    taskListActivity,
+                    activity,
                     (v, selectedYear, selectedMonth, selectedDay) -> {
                         Calendar selectedCalendar = Calendar.getInstance();
                         selectedCalendar.set(selectedYear, selectedMonth, selectedDay, selHour[0], selMinute[0]);
@@ -128,7 +125,7 @@ public class AddTaskDialogFragment extends DialogFragment {
                             String formattedDate = String.format(Locale.getDefault(), "%d-%02d-%02d", selectedYear, (selectedMonth + 1), selectedDay);
                             date.setText(formattedDate);
                         } else {
-                            Toast.makeText(taskListActivity, R.string.not_valid_date, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.not_valid_date, Toast.LENGTH_SHORT).show();
                         }
                     },
                     year,
@@ -143,7 +140,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         chooseTime.setOnClickListener(view -> {
             new TimePickerDialog(
-                    taskListActivity,
+                    activity,
                     (v, hourOfDay, m) -> {
                         Calendar selectedCalendar = Calendar.getInstance();
                         selectedCalendar.set(selYear[0], selMonth[0], selDay[0], hourOfDay, m);
@@ -156,7 +153,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
                             time.setText(selectedTime);
                         } else {
-                            Toast.makeText(taskListActivity, R.string.not_valid_time, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.not_valid_time, Toast.LENGTH_SHORT).show();
                         }
                     },
                     hour,
@@ -165,7 +162,7 @@ public class AddTaskDialogFragment extends DialogFragment {
             ).show();
         });
 
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(taskListActivity, R.array.categories, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(activity, R.array.categories, android.R.layout.simple_spinner_item);
 
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(spinnerAdapter);
@@ -190,23 +187,23 @@ public class AddTaskDialogFragment extends DialogFragment {
                             dateNow.toString());
 
                     for (Uri u : attachments) {
-                        DocumentFile df = DocumentFile.fromSingleUri(taskListActivity, u);
+                        DocumentFile df = DocumentFile.fromSingleUri(activity, u);
 
-                        String outputFolder = taskListActivity.getFilesDir() + "/" + task.getFolderName() + "/";
+                        String outputFolder = activity.getFilesDir() + "/" + task.getFolderName() + "/";
                         String output = outputFolder + df.getName();
 
                         try {
                             Files.createDirectories(Paths.get(outputFolder));
-                            Files.copy(taskListActivity.getContentResolver().openInputStream(u), Paths.get(output));
+                            Files.copy(activity.getContentResolver().openInputStream(u), Paths.get(output));
 
                             task.addAttachment(output);
                         } catch (IOException e) {
-                            Toast.makeText(taskListActivity, R.string.cannot_copy_file, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.cannot_copy_file, Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     Thread dbThread = new Thread(() -> {
-                        TaskDatabase.getInstance(taskListActivity).taskDao().insert(task);
+                        TaskDatabase.getInstance(activity).taskDao().insert(task);
                     });
 
                     dbThread.start();
@@ -217,12 +214,10 @@ public class AddTaskDialogFragment extends DialogFragment {
                         throw new RuntimeException(e);
                     }
 
-                    taskListActivity.updateTaskList();
-
                     final Task[] lastInserted = {null};
 
                     Thread dbThread2 = new Thread(() -> {
-                        lastInserted[0] = TaskDatabase.getInstance(taskListActivity).taskDao().findLastInserted();
+                        lastInserted[0] = TaskDatabase.getInstance(activity).taskDao().findLastInserted();
                     });
 
                     dbThread2.start();
@@ -233,28 +228,22 @@ public class AddTaskDialogFragment extends DialogFragment {
                         throw new RuntimeException(e);
                     }
 
-                    Intent resultIntent = new Intent(taskListActivity, TaskActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    if (notification.isChecked()) {
+                        AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
-                    resultIntent.putExtra("id", lastInserted[0].getId());
+                        Intent alarmIntent = new Intent(activity, NotificationReceiver.class);
+                        alarmIntent.putExtra("id", lastInserted[0].getId());
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, lastInserted[0].getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(taskListActivity);
-                    stackBuilder.addNextIntentWithParentStack(resultIntent);
-                    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                        SharedPreferences sharedPref = activity.getSharedPreferences("pref", Context.MODE_PRIVATE);
+                        long notificationTime = (long) sharedPref.getInt("nt", 1) * 60 * 1000;
 
-                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(taskListActivity, "id")
-                            .setSmallIcon(R.drawable.baseline_notifications_24)
-                            .setContentTitle(lastInserted[0].getTitle())
-                            .setContentText(lastInserted[0].getDescription())
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                            .setContentIntent(resultPendingIntent)
-                            .setAutoCancel(true);
+                        long whenFire = lastInserted[0].getDeadline().toInstant(ZoneOffset.UTC).toEpochMilli() - LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() - notificationTime;
 
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(taskListActivity);
-
-                    if (ActivityCompat.checkSelfPermission(taskListActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                        notificationManager.notify(lastInserted[0].getId(), notificationBuilder.build());
+                        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + whenFire, pendingIntent);
                     }
 
+                    activity.updateTaskList();
                     tasksAdapter.notifyDataSetChanged();
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> AddTaskDialogFragment.this.getDialog().cancel());

@@ -1,14 +1,22 @@
 package com.x.todo;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 public class RemoveTaskDialogFragment extends DialogFragment {
@@ -31,6 +39,18 @@ public class RemoveTaskDialogFragment extends DialogFragment {
 
         builder.setMessage(R.string.remove_task_message).
                 setPositiveButton(R.string.remove, (dialogInterface, i) -> {
+                    Task task = tasks.get(position);
+
+                    if (task.isNotification()) {
+                        AlarmManager alarmManager = (AlarmManager) taskListActivity.getSystemService(Context.ALARM_SERVICE);
+
+                        Intent alarmIntent = new Intent(taskListActivity, NotificationReceiver.class);
+                        alarmIntent.putExtra("id", task.getId());
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(taskListActivity, task.getId(), alarmIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+
+                        alarmManager.cancel(pendingIntent);
+                    }
+
                     Thread dbThread = new Thread(() -> {
                         deleteFolder(new File(getContext().getFilesDir() + "/" + tasks.get(position).getFolderName()));
 

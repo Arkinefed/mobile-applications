@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,7 +61,7 @@ public class TaskListActivity extends AppCompatActivity {
         FloatingActionButton addTask = findViewById(R.id.add_task);
 
         addTask.setOnClickListener(view -> {
-            AddTaskDialogFragment addTaskDialogFragment = new AddTaskDialogFragment(tasks, tasksAdapter, this);
+            AddTaskDialogFragment addTaskDialogFragment = new AddTaskDialogFragment(tasksAdapter, this);
             addTaskDialogFragment.show(getSupportFragmentManager(), "add_task_dialog");
         });
 
