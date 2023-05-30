@@ -2,13 +2,24 @@ package com.x.todo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,19 +34,21 @@ public class TaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
         if (savedInstanceState == null) {
             id = getIntent().getIntExtra("id", 0);
         } else {
             id = savedInstanceState.getInt("id");
         }
 
-        TextView title = findViewById(R.id.title);
-        TextView description = findViewById(R.id.description);
+        EditText title = findViewById(R.id.title);
+        EditText description = findViewById(R.id.description);
         TextView whenCreated = findViewById(R.id.when_created);
         TextView deadline = findViewById(R.id.deadline);
-        TextView status = findViewById(R.id.status);
-        TextView notification = findViewById(R.id.notification);
-        TextView category = findViewById(R.id.category);
+        CheckBox status = findViewById(R.id.status);
+        CheckBox notification = findViewById(R.id.notification);
+        Spinner category = findViewById(R.id.category);
         TextView attachmentCount = findViewById(R.id.attachment_count);
         LinearLayout attachments = findViewById(R.id.attachments);
 
@@ -51,13 +64,22 @@ public class TaskActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(task.getTitle());
+
         title.setText(task.getTitle());
         description.setText(task.getDescription());
         whenCreated.setText(task.getWhenCreated().toString());
         deadline.setText(task.getDeadline().toString());
-        status.setText(task.isFinished() ? R.string.finished : R.string.unfinished);
-        notification.setText(task.isNotification() ? R.string.on : R.string.off);
-        category.setText(task.getCategory());
+        status.setChecked(task.isFinished());
+        notification.setChecked(task.isNotification());
+
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.categories, android.R.layout.simple_spinner_item);
+
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category.setAdapter(spinnerAdapter);
+
+        category.setSelection(spinnerAdapter.getPosition(task.getCategory()));
         attachmentCount.setText(String.valueOf(task.getAttachments().size()));
 
         for (String attachment : task.getAttachments()) {
@@ -85,5 +107,27 @@ public class TaskActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putInt("id", id);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.task_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.save) {
+
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 }

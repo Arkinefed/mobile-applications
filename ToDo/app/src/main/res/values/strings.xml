@@ -37,6 +37,8 @@
     <string name="settings">ustawienia</string>
     <string name="categories">kategorie</string>
     <string name="notification_time">czas powiadomień (minuty)</string>
+    <string name="save">zapisz</string>
+    <string name="completed">ukończone</string>
 
     <string name="channel_name">zadania</string>
     <string name="channel_description">powiadomienia o zadaniach</string>
