@@ -4,12 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +24,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +35,24 @@ public class TaskActivity extends AppCompatActivity {
     private int id;
     private Task task;
 
+    private EditText title;
+    private EditText description;
+    private TextView whenCreated;
+    private TextView deadline;
+    private CheckBox status;
+    private CheckBox notification;
+    private Spinner category;
+    private TextView attachmentCount;
+    private LinearLayout attachments;
+
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
         if (savedInstanceState == null) {
             id = getIntent().getIntExtra("id", 0);
@@ -42,15 +60,15 @@ public class TaskActivity extends AppCompatActivity {
             id = savedInstanceState.getInt("id");
         }
 
-        EditText title = findViewById(R.id.title);
-        EditText description = findViewById(R.id.description);
-        TextView whenCreated = findViewById(R.id.when_created);
-        TextView deadline = findViewById(R.id.deadline);
-        CheckBox status = findViewById(R.id.status);
-        CheckBox notification = findViewById(R.id.notification);
-        Spinner category = findViewById(R.id.category);
-        TextView attachmentCount = findViewById(R.id.attachment_count);
-        LinearLayout attachments = findViewById(R.id.attachments);
+        title = findViewById(R.id.title);
+        description = findViewById(R.id.description);
+        whenCreated = findViewById(R.id.when_created);
+        deadline = findViewById(R.id.deadline);
+        status = findViewById(R.id.status);
+        notification = findViewById(R.id.notification);
+        category = findViewById(R.id.category);
+        attachmentCount = findViewById(R.id.attachment_count);
+        attachments = findViewById(R.id.attachments);
 
         Thread dbThread = new Thread(() -> {
             task = TaskDatabase.getInstance(this).taskDao().findTaskById(id);
@@ -123,7 +141,52 @@ public class TaskActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.save) {
+            task.setTitle(title.getText().toString());
+            task.setDescription(description.getText().toString());
 
+            task.setFinished(status.isChecked());
+            task.setNotification(notification.isChecked());
+
+            AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+
+            Intent alarmIntent = new Intent(this, NotificationReceiver.class);
+            alarmIntent.putExtra("id", task.getId());
+
+            if (!task.isNotification() || task.isFinished()) {
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), alarmIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+
+                alarmManager.cancel(pendingIntent);
+            } else {
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                SharedPreferences sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE);
+                long notificationTime = (long) sharedPref.getInt("nt", 1) * 60 * 1000;
+
+                long whenFire = task.getDeadline().toInstant(ZoneOffset.UTC).toEpochMilli() - LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() - notificationTime;
+
+                alarmManager.setExact(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + whenFire, pendingIntent);
+            }
+
+            task.setCategory(category.getSelectedItem().toString());
+
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(task.getTitle());
+
+            Thread dbThread = new Thread(() -> {
+                TaskDatabase.getInstance(this).taskDao().update(task);
+            });
+
+            dbThread.start();
+
+            try {
+                dbThread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            TaskListActivity.getWeakReference().updateTaskList();
+
+            Toast.makeText(this, R.string.task_updated, Toast.LENGTH_SHORT).show();
         } else {
             return super.onOptionsItemSelected(item);
         }
