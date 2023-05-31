@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlarmManager;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,8 +31,11 @@ import android.widget.Toast;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskActivity extends AppCompatActivity {
     private int id;
@@ -38,7 +44,10 @@ public class TaskActivity extends AppCompatActivity {
     private EditText title;
     private EditText description;
     private TextView whenCreated;
-    private TextView deadline;
+    private TextView date;
+    private Button chooseDate;
+    private TextView time;
+    private Button chooseTime;
     private CheckBox status;
     private CheckBox notification;
     private Spinner category;
@@ -63,7 +72,10 @@ public class TaskActivity extends AppCompatActivity {
         title = findViewById(R.id.title);
         description = findViewById(R.id.description);
         whenCreated = findViewById(R.id.when_created);
-        deadline = findViewById(R.id.deadline);
+        date = findViewById(R.id.date);
+        chooseDate = findViewById(R.id.choose_date);
+        time = findViewById(R.id.time);
+        chooseTime = findViewById(R.id.choose_time);
         status = findViewById(R.id.status);
         notification = findViewById(R.id.notification);
         category = findViewById(R.id.category);
@@ -88,7 +100,76 @@ public class TaskActivity extends AppCompatActivity {
         title.setText(task.getTitle());
         description.setText(task.getDescription());
         whenCreated.setText(task.getWhenCreated().toString());
-        deadline.setText(task.getDeadline().toString());
+
+        LocalDateTime deadline = task.getDeadline();
+
+        int year = deadline.getYear();
+        int month = deadline.getMonthValue() - 1;
+        int day = deadline.getDayOfMonth();
+        int hour = deadline.getHour();
+        int minute = deadline.getMinute();
+
+        String formattedDateString = String.format(Locale.getDefault(), "%d-%02d-%02d", year, (month + 1), day);
+        date.setText(formattedDateString);
+
+        final int[] selYear = {year};
+        final int[] selMonth = {month};
+        final int[] selDay = {day};
+        final int[] selHour = {hour};
+        final int[] selMinute = {minute};
+
+        chooseDate.setOnClickListener(view -> {
+            new DatePickerDialog(
+                    this,
+                    (v, selectedYear, selectedMonth, selectedDay) -> {
+                        Calendar selectedCalendar = Calendar.getInstance();
+                        selectedCalendar.set(selectedYear, selectedMonth, selectedDay, selHour[0], selMinute[0]);
+
+                        if (selectedCalendar.getTimeInMillis() >= Calendar.getInstance().getTimeInMillis()) {
+                            selYear[0] = selectedYear;
+                            selMonth[0] = selectedMonth;
+                            selDay[0] = selectedDay;
+
+                            String formattedDate = String.format(Locale.getDefault(), "%d-%02d-%02d", selectedYear, (selectedMonth + 1), selectedDay);
+                            date.setText(formattedDate);
+                        } else {
+                            Toast.makeText(this, R.string.not_valid_date, Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    year,
+                    month,
+                    day
+            ).show();
+        });
+
+        String currentTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+
+        time.setText(currentTime);
+
+        chooseTime.setOnClickListener(view -> {
+            new TimePickerDialog(
+                    this,
+                    (v, hourOfDay, m) -> {
+                        Calendar selectedCalendar = Calendar.getInstance();
+                        selectedCalendar.set(selYear[0], selMonth[0], selDay[0], hourOfDay, m);
+
+                        if (selectedCalendar.getTimeInMillis() >= Calendar.getInstance().getTimeInMillis()) {
+                            selHour[0] = hourOfDay;
+                            selMinute[0] = m;
+
+                            String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, m);
+
+                            time.setText(selectedTime);
+                        } else {
+                            Toast.makeText(this, R.string.not_valid_time, Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    hour,
+                    minute,
+                    true
+            ).show();
+        });
+
         status.setChecked(task.isFinished());
         notification.setChecked(task.isNotification());
 
@@ -143,6 +224,8 @@ public class TaskActivity extends AppCompatActivity {
         if (id == R.id.save) {
             task.setTitle(title.getText().toString());
             task.setDescription(description.getText().toString());
+
+            task.setDeadline(LocalDateTime.parse(date.getText().toString() + time.getText().toString(), DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")));
 
             task.setFinished(status.isChecked());
             task.setNotification(notification.isChecked());
