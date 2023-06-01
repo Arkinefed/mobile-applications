@@ -207,6 +207,13 @@
             android:text="@string/attachments"
             android:textColor="@color/black" />
 
+        <Button
+            android:id="@+id/choose_attachments"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="7dp"
+            android:text="@string/add_attachments" />
+
         <TextView
             android:id="@+id/attachment_count"
             android:layout_width="match_parent"

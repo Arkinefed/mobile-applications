@@ -1,8 +1,12 @@
 package com.x.todo;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.documentfile.provider.DocumentFile;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -29,6 +33,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -43,11 +51,8 @@ public class TaskActivity extends AppCompatActivity {
 
     private EditText title;
     private EditText description;
-    private TextView whenCreated;
     private TextView date;
-    private Button chooseDate;
     private TextView time;
-    private Button chooseTime;
     private CheckBox status;
     private CheckBox notification;
     private Spinner category;
@@ -56,10 +61,48 @@ public class TaskActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
 
+    private ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia;
+    private List<Uri> newAttachments = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
+
+        pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(), uris -> {
+            newAttachments = uris;
+
+            for (Uri u : newAttachments) {
+                DocumentFile df = DocumentFile.fromSingleUri(this, u);
+
+                String outputFolder = getFilesDir() + "/" + task.getFolderName() + "/";
+                String output = outputFolder + df.getName();
+
+                try {
+                    Files.createDirectories(Paths.get(outputFolder));
+                    Files.copy(getContentResolver().openInputStream(u), Paths.get(output));
+
+                    task.addAttachment(output);
+                } catch (IOException e) {
+                    Toast.makeText(this, R.string.cannot_copy_file, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            Thread dbThread = new Thread(() -> {
+                TaskDatabase.getInstance(this).taskDao().update(task);
+            });
+
+            dbThread.start();
+
+            try {
+                dbThread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            TaskListActivity.getWeakReference().updateTaskList();
+            displayAttachments();
+        });
 
         toolbar = findViewById(R.id.toolbar);
 
@@ -71,14 +114,15 @@ public class TaskActivity extends AppCompatActivity {
 
         title = findViewById(R.id.title);
         description = findViewById(R.id.description);
-        whenCreated = findViewById(R.id.when_created);
+        TextView whenCreated = findViewById(R.id.when_created);
         date = findViewById(R.id.date);
-        chooseDate = findViewById(R.id.choose_date);
+        Button chooseDate = findViewById(R.id.choose_date);
         time = findViewById(R.id.time);
-        chooseTime = findViewById(R.id.choose_time);
+        Button chooseTime = findViewById(R.id.choose_time);
         status = findViewById(R.id.status);
         notification = findViewById(R.id.notification);
         category = findViewById(R.id.category);
+        Button chooseAttachments = findViewById(R.id.choose_attachments);
         attachmentCount = findViewById(R.id.attachment_count);
         attachments = findViewById(R.id.attachments);
 
@@ -185,6 +229,18 @@ public class TaskActivity extends AppCompatActivity {
         category.setAdapter(spinnerAdapter);
 
         category.setSelection(spinnerAdapter.getPosition(task.getCategory()));
+
+        chooseAttachments.setOnClickListener(view -> {
+            pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
+                    .setMediaType((ActivityResultContracts.PickVisualMedia.VisualMediaType) ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build());
+        });
+
+        displayAttachments();
+    }
+
+    private void displayAttachments() {
+        attachments.removeAllViews();
         attachmentCount.setText(String.valueOf(task.getAttachments().size()));
 
         for (String attachment : task.getAttachments()) {
@@ -204,6 +260,40 @@ public class TaskActivity extends AppCompatActivity {
             iv.setAdjustViewBounds(true);
 
             attachments.addView(iv);
+
+            Button rb = new Button(this);
+
+            rb.setText(R.string.remove_button);
+            rb.setOnClickListener(view -> {
+                List<String> att = new ArrayList<>(task.getAttachments());
+
+                File f = new File(attachment);
+
+                f.delete();
+
+                att.remove(attachment);
+
+                task.setAttachments(att);
+
+                Thread dbThread = new Thread(() -> {
+                    TaskDatabase.getInstance(this).taskDao().update(task);
+                });
+
+                dbThread.start();
+
+                try {
+                    dbThread.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                TaskListActivity.getWeakReference().updateTaskList();
+                displayAttachments();
+            });
+
+            rb.setLayoutParams(layoutParams);
+
+            attachments.addView(rb);
         }
     }
 
