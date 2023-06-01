@@ -40,6 +40,7 @@
     <string name="save">zapisz</string>
     <string name="completed">ukończone</string>
     <string name="task_updated">zadanie zostało zaktualizowane</string>
+    <string name="no_such_task">nie odnaleziono zadania</string>
 
     <string name="channel_name">zadania</string>
     <string name="channel_description">powiadomienia o zadaniach</string>

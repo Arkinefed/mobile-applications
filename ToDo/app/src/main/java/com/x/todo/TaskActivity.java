@@ -94,6 +94,12 @@ public class TaskActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        if (task == null) {
+            Toast.makeText(this, R.string.no_such_task, Toast.LENGTH_SHORT).show();
+
+            finish();
+        }
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(task.getTitle());
 
